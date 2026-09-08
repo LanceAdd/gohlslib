@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/playlist/primitives"
+	"github.com/LanceAdd/gohlslib/v2/pkg/playlist/primitives"
 )
 
 // MediaRenditionReport is a EXT-X-RENDITION-REPORT tag.

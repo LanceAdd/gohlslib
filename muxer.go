@@ -14,9 +14,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/codecs"
-	"github.com/bluenviron/gohlslib/v2/pkg/playlist"
-	"github.com/bluenviron/gohlslib/v2/pkg/storage"
+	"github.com/LanceAdd/gohlslib/v2/pkg/codecs"
+	"github.com/LanceAdd/gohlslib/v2/pkg/playlist"
+	"github.com/LanceAdd/gohlslib/v2/pkg/storage"
 )
 
 const (

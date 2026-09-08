@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/playlist"
+	"github.com/LanceAdd/gohlslib/v2/pkg/playlist"
 )
 
 var casesMedia = []struct {

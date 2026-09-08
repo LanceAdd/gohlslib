@@ -9,7 +9,7 @@ import (
 	"github.com/bluenviron/mediacommon/v2/pkg/codecs/mpeg4audio"
 	"github.com/bluenviron/mediacommon/v2/pkg/formats/mpegts"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/storage"
+	"github.com/LanceAdd/gohlslib/v2/pkg/storage"
 )
 
 type muxerSegmentMPEGTS struct {

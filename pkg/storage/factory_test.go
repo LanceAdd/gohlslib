@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/storage"
+	"github.com/LanceAdd/gohlslib/v2/pkg/storage"
 )
 
 func TestStorage(t *testing.T) {

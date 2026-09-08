@@ -3,7 +3,7 @@ package gohlslib
 import (
 	mp4codecs "github.com/bluenviron/mediacommon/v2/pkg/formats/mp4/codecs"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/codecs"
+	"github.com/LanceAdd/gohlslib/v2/pkg/codecs"
 )
 
 func fromFMP4(in mp4codecs.Codec) codecs.Codec { //nolint:dupl

@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bluenviron/gohlslib/v2"
-	"github.com/bluenviron/gohlslib/v2/pkg/codecs"
+	"github.com/LanceAdd/gohlslib/v2"
+	"github.com/LanceAdd/gohlslib/v2/pkg/codecs"
 )
 
 // This example shows how to:

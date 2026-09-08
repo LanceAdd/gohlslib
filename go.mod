@@ -1,4 +1,4 @@
-module github.com/bluenviron/gohlslib/v2
+module github.com/LanceAdd/gohlslib/v2
 
 go 1.26.0
 

@@ -21,10 +21,10 @@ import (
 	"github.com/bluenviron/mediacommon/v2/pkg/formats/fmp4/seekablebuffer"
 	"github.com/bluenviron/mediacommon/v2/pkg/formats/mpegts"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/codecparams"
-	"github.com/bluenviron/gohlslib/v2/pkg/codecs"
-	"github.com/bluenviron/gohlslib/v2/pkg/playlist"
-	"github.com/bluenviron/gohlslib/v2/pkg/storage"
+	"github.com/LanceAdd/gohlslib/v2/pkg/codecparams"
+	"github.com/LanceAdd/gohlslib/v2/pkg/codecs"
+	"github.com/LanceAdd/gohlslib/v2/pkg/playlist"
+	"github.com/LanceAdd/gohlslib/v2/pkg/storage"
 )
 
 func mediaPlaylistPath(streamID string) string {

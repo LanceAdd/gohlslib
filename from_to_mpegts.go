@@ -3,7 +3,7 @@ package gohlslib
 import (
 	tscodecs "github.com/bluenviron/mediacommon/v2/pkg/formats/mpegts/codecs"
 
-	"github.com/bluenviron/gohlslib/v2/pkg/codecs"
+	"github.com/LanceAdd/gohlslib/v2/pkg/codecs"
 )
 
 func fromMPEGTS(in tscodecs.Codec) codecs.Codec {
