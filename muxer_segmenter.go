@@ -1,7 +1,6 @@
 package gohlslib
 
 import (
-	"log"
 	"bytes"
 	"fmt"
 	"time"
@@ -303,7 +302,6 @@ func (s *muxerSegmenter) writeH264(
 	}
 
 	if !randomAccess && !nonIDRPresent {
-		log.Printf("[diag:muxer] silent-skip au=%d", len(au))
 		return nil
 	}
 
@@ -342,8 +340,6 @@ func (s *muxerSegmenter) writeH264(
 		if writeDTS := timestampToDuration(dts, track.ClockRate); writeDTS > track.stream.lastWriteDTS {
 			track.stream.lastWriteDTS = writeDTS
 		}
-
-		log.Printf("[diag:muxer] write au=%d ra=%v", len(au), randomAccess)
 
 		err = track.stream.nextSegment.(*muxerSegmentMPEGTS).writeH264(
 			track,
