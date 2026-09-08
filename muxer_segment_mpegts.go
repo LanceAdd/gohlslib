@@ -17,6 +17,7 @@ type muxerSegmentMPEGTS struct {
 	prefix         string
 	storageFactory storage.Factory
 	streamID       string
+	archive        bool
 	mpegtsWriter   *mpegts.Writer
 	id             uint64
 	startNTP       time.Time
@@ -46,7 +47,10 @@ func (s *muxerSegmentMPEGTS) initialize() error {
 }
 
 func (s *muxerSegmentMPEGTS) close() {
-	s.storage.Remove()
+	// archive mode keeps every segment file on disk
+	if !s.archive {
+		s.storage.Remove()
+	}
 }
 
 func (s *muxerSegmentMPEGTS) getPath() string {

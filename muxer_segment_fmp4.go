@@ -11,6 +11,7 @@ type muxerSegmentFMP4 struct {
 	prefix         string
 	storageFactory storage.Factory
 	streamID       string
+	archive        bool
 	id             uint64
 	startNTP       time.Time
 	startDTS       time.Duration
@@ -35,7 +36,10 @@ func (s *muxerSegmentFMP4) initialize() error {
 }
 
 func (s *muxerSegmentFMP4) close() {
-	s.storage.Remove()
+	// archive mode keeps every segment file on disk
+	if !s.archive {
+		s.storage.Remove()
+	}
 }
 
 func (s *muxerSegmentFMP4) getPath() string {

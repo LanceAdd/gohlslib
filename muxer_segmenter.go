@@ -336,6 +336,11 @@ func (s *muxerSegmenter) writeH264(
 			}
 		}
 
+		// archive segment boundaries: keep track of the last written DTS
+		if writeDTS := timestampToDuration(dts, track.ClockRate); writeDTS > track.stream.lastWriteDTS {
+			track.stream.lastWriteDTS = writeDTS
+		}
+
 		err = track.stream.nextSegment.(*muxerSegmentMPEGTS).writeH264(
 			track,
 			pts,
@@ -442,6 +447,10 @@ func (s *muxerSegmenter) writeMPEG4Audio(
 			if track.stream.nextSegment == nil {
 				return nil
 			}
+		}
+
+		if writeDTS := timestampToDuration(pts, track.ClockRate); writeDTS > track.stream.lastWriteDTS {
+			track.stream.lastWriteDTS = writeDTS
 		}
 
 		err := track.stream.nextSegment.(*muxerSegmentMPEGTS).writeMPEG4Audio(track, pts, aus)

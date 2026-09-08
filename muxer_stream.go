@@ -117,6 +117,9 @@ type muxerStream struct {
 	isDefault      bool
 	nextSegmentID  uint64
 	nextPartID     uint64
+	archive        bool              // 归档模式:段不删除,Close 写最终 playlist
+	endList        bool              // 写出 playlist 时置 EXT-X-ENDLIST(Close 时)
+	lastWriteDTS   time.Duration     // 最后一次写入的 DTS(archive 收尾用)
 
 	generateMediaPlaylist  generateMediaPlaylistFunc
 	mpegtsSwitchableWriter *switchableWriter // mpegts only
@@ -169,8 +172,15 @@ func (s *muxerStream) close() {
 	}
 
 	if s.nextSegment != nil {
-		s.nextSegment.finalize(0) //nolint:errcheck
-		s.nextSegment.close()
+		if s.archive {
+			// 归档:最后一段以真实结束时间收尾并纳入 playlist,文件保留
+			s.nextSegment.finalize(s.lastWriteDTS) //nolint:errcheck
+			s.segments = append(s.segments, s.nextSegment)
+			s.nextSegment = nil
+		} else {
+			s.nextSegment.finalize(0) //nolint:errcheck
+			s.nextSegment.close()
+		}
 	}
 }
 
@@ -448,6 +458,10 @@ func (s *muxerStream) generateMediaPlaylistMPEGTS(
 		}
 	}
 
+	if s.endList {
+		pl.Endlist = true
+	}
+
 	return pl.Marshal()
 }
 
@@ -578,6 +592,10 @@ func (s *muxerStream) generateMediaPlaylistFMP4(
 		}
 	}
 
+	if s.endList {
+		pl.Endlist = true
+	}
+
 	return pl.Marshal()
 }
 
@@ -638,6 +656,7 @@ func (s *muxerStream) createFirstSegment(
 			prefix:         s.prefix,
 			storageFactory: s.storageFactory,
 			streamID:       s.id,
+			archive:        s.archive,
 			mpegtsWriter:   s.mpegtsWriter,
 			id:             s.nextSegmentID,
 			startNTP:       nextNTP,
@@ -655,6 +674,7 @@ func (s *muxerStream) createFirstSegment(
 			prefix:         s.prefix,
 			storageFactory: s.storageFactory,
 			streamID:       s.id,
+			archive:        s.archive,
 			id:             s.nextSegmentID,
 			startNTP:       nextNTP,
 			startDTS:       nextDTS,
@@ -847,8 +867,8 @@ func (s *muxerStream) rotateSegments(
 			io.Copy(w, r)
 		})
 
-	// delete old segments and parts
-	if len(s.segments) > s.segmentCount {
+	// delete old segments and parts (archive mode keeps everything on disk)
+	if len(s.segments) > s.segmentCount && !s.archive {
 		toDelete := s.segments[0]
 
 		if toDeleteSeg, ok := toDelete.(*muxerSegmentFMP4); ok {
@@ -880,6 +900,7 @@ func (s *muxerStream) rotateSegments(
 			prefix:         s.prefix,
 			storageFactory: s.storageFactory,
 			streamID:       s.id,
+			archive:        s.archive,
 			mpegtsWriter:   s.mpegtsWriter,
 			id:             s.nextSegmentID,
 			startNTP:       nextNTP,
@@ -897,6 +918,7 @@ func (s *muxerStream) rotateSegments(
 			prefix:         s.prefix,
 			storageFactory: s.storageFactory,
 			streamID:       s.id,
+			archive:        s.archive,
 			id:             s.nextSegmentID,
 			startNTP:       nextNTP,
 			startDTS:       nextDTS,

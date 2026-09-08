@@ -189,6 +189,12 @@ type Muxer struct {
 	// - offload segments from RAM to disk
 	// - produce self-contained folders to pass to a CDN (only in case of non low-latency)
 	Directory string
+	// Archive mode (requires a non-empty Directory and a non low-latency variant):
+	// segments are never deleted (the SegmentCount limit is ignored), Close()
+	// keeps all files on disk, finalizes the last segment and writes the final
+	// playlists (with EXT-X-ENDLIST) to the Directory. This is meant for VOD
+	// recording use cases.
+	Archive bool
 
 	//
 	// callbacks (all optional)
@@ -397,6 +403,7 @@ func (m *Muxer) Start() error {
 			tracks:         m.mtracks,
 			id:             "main",
 			nextSegmentID:  nextSegmentID,
+			archive:        m.Archive,
 		}
 		err = stream.initialize()
 		if err != nil {
@@ -455,6 +462,7 @@ func (m *Muxer) Start() error {
 				language:       track.Language,
 				isDefault:      isDefault,
 				nextSegmentID:  nextSegmentID,
+				archive:        m.Archive,
 			}
 			err = stream.initialize()
 			if err != nil {
@@ -484,6 +492,11 @@ func (m *Muxer) Close() {
 
 	for _, stream := range m.streams {
 		stream.close()
+	}
+
+	// archive mode: write final playlists (with EXT-X-ENDLIST) to disk
+	if m.Archive && m.Directory != "" && m.Variant != MuxerVariantLowLatency {
+		_ = m.savePlaylists(true) //nolint:errcheck
 	}
 
 	m.mutex.Unlock()
@@ -668,7 +681,7 @@ func (m *Muxer) rotateSegmentsInner(
 	}
 
 	if m.Directory != "" && m.Variant != MuxerVariantLowLatency {
-		err = m.savePlaylists()
+		err = m.savePlaylists(false)
 		if err != nil {
 			return err
 		}
@@ -677,8 +690,10 @@ func (m *Muxer) rotateSegmentsInner(
 	return nil
 }
 
-func (m *Muxer) savePlaylists() error {
+func (m *Muxer) savePlaylists(endList bool) error {
 	for _, stream := range m.streams {
+		stream.endList = endList
+
 		byts, err := stream.generateMediaPlaylist(false, "")
 		if err != nil {
 			return err
